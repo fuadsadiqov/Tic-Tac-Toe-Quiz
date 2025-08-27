@@ -1,4 +1,4 @@
-Tic Tac Toe – Backend (NestJS)
+### Tic Tac Toe – Backend (NestJS)
 🎯 Layihə haqqında
 
 Bu layihə Tic Tac Toe oyununun backend hissəsidir. Oyun fərqlidir: X və O-lar real məşhur şəxslərin adlarıdır və oyunda hər oyun üçün random attribute/category-lər seçilir, hansı ki həmin meyarlara əsasən məşhur şəxslər (Person) seçilir.
