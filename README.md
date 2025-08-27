@@ -1,73 +1,127 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+Tic Tac Toe – Backend (NestJS)
+🎯 Layihə haqqında
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Bu layihə Tic Tac Toe oyununun backend hissəsidir. Oyun fərqlidir: X və O-lar real məşhur şəxslərin adlarıdır və oyunda hər oyun üçün random attribute/category-lər seçilir, hansı ki həmin meyarlara əsasən məşhur şəxslər (Person) seçilir.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Backend NestJS + TypeORM + PostgreSQL üzərində qurulub və aşağıdakı əsas funksionallıqları təmin edir:
 
-## Description
+İstifadəçi qeydiyyatı və login (JWT authentication)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Oyun sessiyalarının yaradılması (Game)
 
-## Installation
+Oyunda hərəkətlərin əlavə olunması (Move)
 
-```bash
-$ npm install
-```
+Person və Attribute məlumatlarının idarəsi
 
-## Running the app
+Hər oyun üçün random seçilmiş category-lərin saxlanması
 
-```bash
-# development
-$ npm run start
+📦 Texnologiyalar
 
-# watch mode
-$ npm run start:dev
+Node.js v20+
+NestJS
+TypeORM
+PostgreSQL
+bcrypt (şifrə hash-ləmə)
 
-# production mode
-$ npm run start:prod
-```
+JWT (token-based authentication)
 
-## Test
+🗂 Database Structure (ERD)
 
-```bash
-# unit tests
-$ npm run test
+Əsas cədvəllər:
+User – oyunçular, autentifikasiya üçün
+Game – oyun sessiyası
+Move – oyunda hərəkətlər
+Person – məşhur şəxslər
+Attribute – oyun category-ləri (məsələn: "Nationality", "Club")
+PlayerAttribute – hansı person hansı attribute-a malikdir
 
-# e2e tests
-$ npm run test:e2e
+Əlaqələr:
 
-# test coverage
-$ npm run test:cov
-```
+User ↔ Game (X və O oyunçuları)
 
-## Support
+Game ↔ Move
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Move ↔ Person (seçilmiş məşhur şəxs)
 
-## Stay in touch
+Person ↔ Attribute (N:M)
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+⚙️ Quraşdırma
 
-## License
+1. Repository-ni klonla:
 
-Nest is [MIT licensed](LICENSE).
+## bash
+git clone https://github.com/fuadsadiqov/tic-tac-toe-quiz.git
+cd tic-tac-toe-quiz
+
+npm install
+###
+
+2. .env faylı yarat və konfiqurasiya et:
+
+## env
+DATABASE_HOST=
+DATABASE_PORT=
+DATABASE_USER=
+DATABASE_PASSWORD=
+DATABASE_NAME=
+JWT_SECRET=
+##
+
+3. PostgreSQL-də verilənlər bazasını yarat:
+CREATE DATABASE database;
+
+4. Serveri işə sal:
+##
+npm run start:dev
+##
+
+🚀 API Endpoints
+Auth
+
+POST /auth/register – istifadəçi qeydiyyatı
+
+POST /auth/login – istifadəçi login
+
+Users
+
+GET /users – bütün istifadəçiləri gətirir (admin üçün)
+
+Games
+
+POST /games – yeni oyun yaratmaq
+
+GET /games/:id – oyun vəziyyətini gətirir
+
+Moves
+
+POST /games/:id/move – oyuna hərəkət əlavə etmək
+
+Persons & Attributes
+
+GET /persons – məşhur şəxsləri gətirir
+
+GET /attributes – oyun üçün category-ləri gətirir
+
+🔐 Autentifikasiya
+
+JWT token əsasında.
+
+Authorization: Bearer <token> header ilə qorunan route-lara daxil olmaq mümkündür.
+
+📝 Qeydlər
+
+Hər oyun üçün category-lər random seçilir və GameCategory cədvəlində saxlanılır.
+
+Oyunun gedişində eyni category-lər istifadə olunur.
+
+synchronize: true TypeORM parametri MVP üçün aktivdir; production üçün migration-lar tövsiyə olunur.
+
+📚 Gələcək İstiqamətlər
+
+Online multiplayer dəstəyi
+
+Bot ilə oyun
+
+Admin panel – person və attribute əlavə etmək üçün
+
+Leaderboard və ELO sistemi
