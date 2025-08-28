@@ -7,9 +7,6 @@ export type GameStatus = 'waiting' | 'in_progress' | 'finished';
 
 @Entity()
 export class Game extends BaseEntity{
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
   @ManyToOne(() => User, (user) => user.gamesAsX, { eager: true })
   playerX: User;
 

@@ -6,9 +6,6 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 
 @Entity()
 export class Move extends BaseEntity{
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
   @ManyToOne(() => Game, (game) => game.moves)
   game: Game;
 

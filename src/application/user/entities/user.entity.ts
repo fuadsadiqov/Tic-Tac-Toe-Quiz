@@ -1,12 +1,10 @@
 import { Game } from 'src/application/game/entities/game.entity';
 import { Move } from 'src/application/move/entities/move.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, BaseEntity } from 'typeorm';
+import { BaseEntity } from 'src/infrastructure/entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 @Entity()
 export class User extends BaseEntity{
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
   @Column({ unique: true })
   username: string;
 

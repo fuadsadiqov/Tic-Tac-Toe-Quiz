@@ -5,9 +5,6 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, ManyToOne } from 't
 
 @Entity()
 export class Attribute extends BaseEntity{
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
   @Column()
   title: string;
 

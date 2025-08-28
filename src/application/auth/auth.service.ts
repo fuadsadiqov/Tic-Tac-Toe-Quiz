@@ -13,7 +13,6 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  // REGISTER
   async register(username: string, password: string): Promise<{ accessToken: string }> {
     const existingUser = await this.userRepository.findOne({ where: { username } });
 
@@ -36,7 +35,6 @@ export class AuthService {
     return { accessToken };
   }
 
-  // LOGIN
   async login(username: string, password: string): Promise<{ accessToken: string }> {
     const user = await this.userRepository.findOne({ where: { username } });
 
