@@ -11,7 +11,7 @@ import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
-@Controller('categories')
+@Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
@@ -20,7 +20,7 @@ export class CategoryController {
     return this.categoryService.create(dto);
   }
 
-  @Get()
+  @Get('all')
   findAll() {
     return this.categoryService.findAll();
   }

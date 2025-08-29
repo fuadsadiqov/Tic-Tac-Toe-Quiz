@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common'
 import { AttributeService } from './attribute.service';
 import { CreateAttributeDto, UpdateAttributeDto } from './dto/attribute.dto';
 
-@Controller('attributes')
+@Controller('attribute')
 export class AttributeController {
   constructor(private readonly attributeService: AttributeService) {}
 
@@ -11,9 +11,9 @@ export class AttributeController {
     return this.attributeService.create(dto);
   }
 
-  @Get()
-  findAll() {
-    return this.attributeService.findAll();
+  @Get('all/:catId')
+  findAll(@Param('catId') catId: string) {
+    return this.attributeService.findAll(catId);
   }
 
   @Get(':id')

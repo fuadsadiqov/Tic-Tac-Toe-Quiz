@@ -1,26 +1,77 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, In } from 'typeorm';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
+import { Attribute } from '../attribute/entities/attribute.entity';
+import { Category } from '../category/entities/category.entity';
+import { Person } from './entities/person.entity';
 
 @Injectable()
 export class PersonService {
-  create(createPersonDto: CreatePersonDto) {
-    return 'This action adds a new person';
+  constructor(
+    @InjectRepository(Person)
+    private repo: Repository<Person>,
+
+    @InjectRepository(Attribute)
+    private attributeRepo: Repository<Attribute>,
+
+    @InjectRepository(Category)
+    private categoryRepo: Repository<Category>,
+  ) {}
+
+  async findAllByCategory(catId: string): Promise<Person[]> {
+    return this.repo.find({
+      where: { category: { id: catId } },
+      relations: ['category', 'attributes'],
+    });
   }
 
-  findAll() {
-    return `This action returns all person`;
+  async findOne(id: string): Promise<Person> {
+    const person = await this.repo.findOne({
+      where: { id },
+      relations: ['category', 'attributes'],
+    });
+    if (!person) throw new NotFoundException('Person not found');
+    return person;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} person`;
+  async create(dto: CreatePersonDto): Promise<Person> {
+    const category = await this.categoryRepo.findOneBy({ id: dto.categoryId });
+    if (!category) throw new NotFoundException('Category not found');
+
+    const attributes = await this.attributeRepo.findBy({ id: In(dto.attributeIds || []) });
+
+    const person = this.repo.create({
+      name: dto.name,
+      category,
+      attributes,
+    });
+
+    return this.repo.save(person);
   }
 
-  update(id: number, updatePersonDto: UpdatePersonDto) {
-    return `This action updates a #${id} person`;
+  async update(id: string, dto: UpdatePersonDto): Promise<Person> {
+    const person = await this.findOne(id);
+
+    if (dto.name) person.name = dto.name;
+
+    if (dto.categoryId) {
+      const category = await this.categoryRepo.findOneBy({ id: dto.categoryId });
+      if (!category) throw new NotFoundException('Category not found');
+      person.category = category;
+    }
+
+    if (dto.attributeIds) {
+      const attributes = await this.attributeRepo.findBy({ id: In(dto.attributeIds) });
+      person.attributes = attributes;
+    }
+
+    return this.repo.save(person);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} person`;
+  async remove(id: string): Promise<void> {
+    const person = await this.findOne(id);
+    await this.repo.remove(person);
   }
 }

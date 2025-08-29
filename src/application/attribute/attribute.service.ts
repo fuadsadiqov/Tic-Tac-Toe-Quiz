@@ -28,9 +28,10 @@ export class AttributeService {
     return this.attributeRepo.save(attribute);
   }
 
-  findAll(): Promise<Attribute[]> {
+  findAll(categoryId: string): Promise<Attribute[]> {
     return this.attributeRepo.find({
       relations: ['category'],
+      where: { category: {id: categoryId }}
     });
   }
 
