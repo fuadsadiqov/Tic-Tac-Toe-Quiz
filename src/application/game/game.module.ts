@@ -3,9 +3,11 @@ import { GameService } from './game.service';
 import { GameController } from './game.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Game } from './entities/game.entity';
+import { Attribute } from '../attribute/entities/attribute.entity';
+import { Person } from '../person/entities/person.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Game])],
+  imports: [TypeOrmModule.forFeature([Game, Attribute, Person])],
   controllers: [GameController],
   providers: [GameService],
 })

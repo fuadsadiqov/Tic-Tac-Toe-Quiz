@@ -39,13 +39,13 @@ export class AuthService {
     const user = await this.userRepository.findOne({ where: { username } });
 
     if (!user) {
-      throw new UnauthorizedException('İstifadəçi adı və ya şifrə yanlışdır.');
+      throw new UnauthorizedException('İstifadəçi adı və ya şifrə yanlışdır.', { description: "INVALID_USERNAME_PASSWORD" });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('İstifadəçi adı və ya şifrə yanlışdır.');
+      throw new UnauthorizedException('İstifadəçi adı və ya şifrə yanlışdır.', { description: "INVALID_USERNAME_PASSWORD" });
     }
 
     const payload = { sub: user.id, username: user.username };

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { CreatePersonDto } from './dto/create-person.dto';
@@ -6,6 +6,9 @@ import { UpdatePersonDto } from './dto/update-person.dto';
 import { Attribute } from '../attribute/entities/attribute.entity';
 import { Category } from '../category/entities/category.entity';
 import { Person } from './entities/person.entity';
+import { PaginationQueryDto } from 'src/infrastructure/pagination/pagination-query.dto';
+import { PaginatedResult } from 'src/infrastructure/pagination/paginated-result.interface';
+import { paginate } from 'src/infrastructure/pagination/pagination.util';
 
 @Injectable()
 export class PersonService {
@@ -20,11 +23,21 @@ export class PersonService {
     private categoryRepo: Repository<Category>,
   ) {}
 
-  async findAllByCategory(catId: string): Promise<Person[]> {
-    return this.repo.find({
-      where: { category: { id: catId } },
-      relations: ['category', 'attributes'],
-    });
+  async findAllByCategory(
+    catId: string,
+    query: PaginationQueryDto,
+  ): Promise<PaginatedResult<Person>> {
+    const qb = this.repo
+      .createQueryBuilder('person')
+      .leftJoinAndSelect('person.category', 'category')
+      .leftJoinAndSelect('person.attributes', 'attributes')
+      .where('category.id = :catId', { catId });
+
+    if (query.search) {
+      qb.andWhere('LOWER(person.name) LIKE :search', { search: `%${query.search.toLowerCase()}%` });
+    }
+
+    return paginate(qb, query);
   }
 
   async findOne(id: string): Promise<Person> {
@@ -39,6 +52,9 @@ export class PersonService {
   async create(dto: CreatePersonDto): Promise<Person> {
     const category = await this.categoryRepo.findOneBy({ id: dto.categoryId });
     if (!category) throw new NotFoundException('Category not found');
+
+    const personExist = await this.repo.findOne({ where: { name: dto.name }});
+    if(personExist) throw new ConflictException("Character already exist!");
 
     const attributes = await this.attributeRepo.findBy({ id: In(dto.attributeIds || []) });
 

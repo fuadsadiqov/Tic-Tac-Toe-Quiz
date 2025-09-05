@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/common';
 import { AttributeService } from './attribute.service';
 import { CreateAttributeDto, UpdateAttributeDto } from './dto/attribute.dto';
+import { PaginationQueryDto } from 'src/infrastructure/pagination/pagination-query.dto';
 
 @Controller('attribute')
 export class AttributeController {
@@ -12,8 +13,11 @@ export class AttributeController {
   }
 
   @Get('all/:catId')
-  findAll(@Param('catId') catId: string) {
-    return this.attributeService.findAll(catId);
+  findAll(
+    @Param('catId') catId: string,
+    @Query() query: PaginationQueryDto,
+  ) {
+    return this.attributeService.findAll(catId, query);
   }
 
   @Get(':id')

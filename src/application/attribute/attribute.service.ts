@@ -4,6 +4,9 @@ import { Repository } from 'typeorm';
 import { Attribute } from './entities/attribute.entity';
 import { CreateAttributeDto, UpdateAttributeDto } from './dto/attribute.dto';
 import { Category } from '../category/entities/category.entity';
+import { PaginationQueryDto } from 'src/infrastructure/pagination/pagination-query.dto';
+import { PaginatedResult } from 'src/infrastructure/pagination/paginated-result.interface';
+import { paginate } from 'src/infrastructure/pagination/pagination.util';
 
 @Injectable()
 export class AttributeService {
@@ -28,12 +31,32 @@ export class AttributeService {
     return this.attributeRepo.save(attribute);
   }
 
-  findAll(categoryId: string): Promise<Attribute[]> {
-    return this.attributeRepo.find({
-      relations: ['category'],
-      where: { category: {id: categoryId }}
-    });
+    async findAll(
+    catId: string,
+    query: PaginationQueryDto,
+  ): Promise<PaginatedResult<any>> {
+    const qb = this.attributeRepo
+      .createQueryBuilder('attribute')
+      .leftJoinAndSelect('attribute.category', 'category')
+      .leftJoinAndSelect('attribute.persons', 'person')
+      .loadRelationCountAndMap('attribute.personCount', 'attribute.persons')
+      .where('category.id = :catId', { catId });
+
+    if (query.search) {
+      qb.andWhere('LOWER(attribute.title) LIKE :search', { search: `%${query.search.toLowerCase()}%` });
+    }
+
+    const paginated = await paginate(qb, query);
+
+    paginated.data = paginated.data.map(attr => ({
+      ...attr,
+      personNames: attr.persons.map(p => p.name),
+      persons: null,
+    }));
+
+    return paginated;
   }
+
 
   async findOne(id: string): Promise<Attribute> {
     const attribute = await this.attributeRepo.findOne({

@@ -4,12 +4,12 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AttributeModule } from './application/attribute/attribute.module';
 import { CategoryModule } from './application/category/category.module';
-import { GameModule } from './application/game/game.module';
 import { MoveModule } from './application/move/move.module';
 import { PersonModule } from './application/person/person.module';
 import { UserModule } from './application/user/user.module';
 import { AuthModule } from './application/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { GameModule } from './application/game/game.module';
 
 @Module({
   imports: [

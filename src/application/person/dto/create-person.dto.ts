@@ -5,10 +5,6 @@ export class CreatePersonDto {
   @IsNotEmpty()
   name: string;
 
-  @IsOptional()
-  @IsString()
-  image?: string;
-
   @IsUUID()
   categoryId: string;
 

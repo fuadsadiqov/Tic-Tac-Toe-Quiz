@@ -1,34 +1,44 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Param,
+  Patch,
+  Body,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { GameService } from './game.service';
-import { CreateGameDto } from './dto/create-game.dto';
-import { UpdateGameDto } from './dto/update-game.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { User } from '../user/entities/user.entity';
+import { LoggedUser } from 'src/infrastructure/user.decorator';
 
-@Controller('game')
+@Controller('games')
+@UseGuards(JwtAuthGuard)
 export class GameController {
   constructor(private readonly gameService: GameService) {}
 
   @Post()
-  create(@Body() createGameDto: CreateGameDto) {
-    return this.gameService.create(createGameDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.gameService.findAll();
+  async createGame(@Param('categoryId') categoryId: string, @LoggedUser() user) {
+    return this.gameService.createGame(categoryId, user);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.gameService.findOne(+id);
+  async getGameById(@Param('id') id: string) {
+    return this.gameService.getGameById(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateGameDto: UpdateGameDto) {
-    return this.gameService.update(+id, updateGameDto);
+  @Get()
+  async listGames() {
+    return this.gameService.listGames();
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.gameService.remove(+id);
+  @Patch(':id/finish')
+  async finishGame(@Param('id') id: string, @Body('winnerId') winnerId?: number) {
+    let winner = undefined;
+    if (winnerId) {
+      // user entity-ni tapmaq lazım
+    }
+    return this.gameService.finishGame(id, winner);
   }
 }
