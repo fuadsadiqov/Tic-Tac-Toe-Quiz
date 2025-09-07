@@ -8,27 +8,7 @@ export class MoveController {
   constructor(private readonly moveService: MoveService) {}
 
   @Post()
-  create(@Body() createMoveDto: CreateMoveDto) {
-    return this.moveService.create(createMoveDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.moveService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.moveService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMoveDto: UpdateMoveDto) {
-    return this.moveService.update(+id, updateMoveDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.moveService.remove(+id);
+  create(@Body() dto: CreateMoveDto) {
+    return this.moveService.create(dto);
   }
 }

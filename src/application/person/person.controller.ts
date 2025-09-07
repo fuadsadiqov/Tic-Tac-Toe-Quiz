@@ -9,12 +9,20 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 export class PersonController {
   constructor(private readonly service: PersonService) {}
 
-   @Get('all/:categoryId')
+  @Get('all/:categoryId')
   findAll(
     @Param('categoryId') categoryId: string,
     @Query() query: PaginationQueryDto,
   ) {
     return this.service.findAllByCategory(categoryId, query);
+  }
+
+  @Get('search')
+  search(
+    @Query('categoryId') categoryId: string,
+    @Query('term') term: string
+  ) {
+    return this.service.search(categoryId, term);
   }
 
   @UseGuards(JwtAuthGuard)

@@ -1,6 +1,6 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
+import { Repository, In, ILike } from 'typeorm';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { Attribute } from '../attribute/entities/attribute.entity';
@@ -38,6 +38,17 @@ export class PersonService {
     }
 
     return paginate(qb, query);
+  }
+  
+  async search(categoryId: string, term: string) {
+    return this.repo.find({
+      where: {
+        category: { id: categoryId },
+        name: ILike(`%${term}%`), 
+      },
+      take: 10,
+      order: { name: 'ASC' },
+    });
   }
 
   async findOne(id: string): Promise<Person> {
