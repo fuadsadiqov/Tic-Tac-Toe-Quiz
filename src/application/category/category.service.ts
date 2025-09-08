@@ -17,8 +17,10 @@ export class CategoryService {
     return this.categoryRepo.save(category);
   }
 
-  async findAll(): Promise<Category[]> {
-    return this.categoryRepo.find({ relations: ['attributes'] });
+  async findAll(includeAttributes: boolean): Promise<Category[]> {
+    return this.categoryRepo.find({ 
+      relations: includeAttributes ? ['attributes'] : [] 
+    });
   }
 
   async findOne(id: string): Promise<Category> {

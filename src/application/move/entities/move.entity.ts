@@ -22,8 +22,11 @@ export class Move extends BaseEntity {
   @Column({ type: 'boolean', default: false })
   isValid: boolean;
 
-  @ManyToOne(() => User, { eager: true })
+  @ManyToOne(() => User, { eager: true, nullable: true })
   player: User;
+
+  @Column({ type: 'enum', enum: ['X', 'O'], default: "X" })
+  symbol: 'X' | 'O';
   
   @CreateDateColumn()
   createdAt: Date;

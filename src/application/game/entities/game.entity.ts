@@ -5,6 +5,17 @@ import { User } from "src/application/user/entities/user.entity";
 import { BaseEntity } from "src/infrastructure/entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany } from "typeorm";
 
+export enum GameStatus {
+  WAITING = 'waiting',
+  ACTIVE = 'active',
+  FINISHED = 'finished',
+}
+
+export enum GameMode {
+  ONLINE = 'online',
+  OFFLINE = 'offline',
+}
+
 @Entity()
 export class Game extends BaseEntity {
   @Column({ type: 'json' })
@@ -19,18 +30,38 @@ export class Game extends BaseEntity {
   @ManyToOne(() => Category)
   category: Category;
 
-  @ManyToOne(() => User)
-  playerX: User;
+  // Player X
+  @ManyToOne(() => User, { nullable: true })
+  playerX?: User;
 
-  @ManyToOne(() => User)
-  playerO: User;
+  @Column({ nullable: true })
+  playerXName?: string; // offline/local mode üçün
+
+  // Player O
+  @ManyToOne(() => User, { nullable: true })
+  playerO?: User;
+
+  @Column({ nullable: true })
+  playerOName?: string;
 
   @ManyToOne(() => User, { nullable: true })
   winner?: User;
 
-  @Column({ type: 'enum', enum: ['active', 'finished'], default: 'active' })
-  status: string;
-  
+  @Column({ nullable: true })
+  winnerName?: string;
+
+  @Column({ type: "int", default: 0 })
+  failedMoves: number;
+
+  @Column({ type: 'enum', enum: GameStatus, default: GameStatus.WAITING })
+  status: GameStatus;
+
+  @Column({ type: 'enum', enum: GameMode, default: GameMode.OFFLINE })
+  mode: GameMode;
+
+  @Column({ type: 'enum', enum: ['X', 'O'], default: 'X' })
+  currentTurn: 'X' | 'O';
+
   @CreateDateColumn()
   startedAt: Date;
 

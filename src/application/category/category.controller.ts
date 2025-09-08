@@ -21,8 +21,8 @@ export class CategoryController {
   }
 
   @Get('all')
-  findAll() {
-    return this.categoryService.findAll();
+  findAll(@Param('includeAttributes') includeAttributes: boolean) {
+    return this.categoryService.findAll(includeAttributes);
   }
 
   @Get(':id')

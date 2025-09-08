@@ -1,11 +1,12 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Game } from './entities/game.entity';
+import { Game, GameMode, GameStatus } from './entities/game.entity';
 import { Attribute } from '../attribute/entities/attribute.entity';
 import { User } from '../user/entities/user.entity';
 import { Person } from '../person/entities/person.entity';
 import { Category } from '../category/entities/category.entity';
+import { CreateGameDto } from './dto/create-game.dto';
 
 @Injectable()
 export class GameService {
@@ -20,7 +21,11 @@ export class GameService {
     private categoryRepo: Repository<Category>,
   ) {}
 
-  async createGame(categoryId: string, creator: User): Promise<Game> {
+  async createGame(
+    creator: User,
+    dto: CreateGameDto
+  ): Promise<Game> {
+    const { mode, playerOName, playerXName, categoryId } = dto;
     const maxRetries = 10;
     let attempt = 0;
     let created: boolean = false;
@@ -28,11 +33,9 @@ export class GameService {
     while (attempt < maxRetries && !created) {
       attempt++;
 
-      // 1. Random attributlar seç
       const rowAttributes = await this.getRandomAttributes(2);
       const columnAttributes = await this.getRandomAttributes(2);
 
-      // 2. Kəsişmə yoxlaması
       let isValid = true;
       for (const row of rowAttributes) {
         for (const col of columnAttributes) {
@@ -50,22 +53,33 @@ export class GameService {
         if (!isValid) break;
       }
 
-      // 3. Əgər valid kombinasiya tapılıbsa → oyunu yarat
       if (isValid) {
         created = true;
-        const category = await this.categoryRepo.findOne({ where: { id: categoryId } })
+        const category = await this.categoryRepo.findOne({ where: { id: categoryId } });
+
         const game = this.gameRepo.create({
-          category: category,
+          category,
           rowAttributes,
           columnAttributes,
-          playerX: creator,
-          status: 'active',
+          mode,
+          currentTurn: 'X',
           startedAt: new Date(),
         });
+
+        if (mode === GameMode.ONLINE) {
+          // creator həmişə playerX
+          game.playerX = creator;
+          game.status = GameStatus.WAITING;
+        } else if (mode === GameMode.OFFLINE) {
+          game.playerXName = playerXName ?? 'Player X';
+          game.playerOName = playerOName ?? 'Player O';
+          game.status = GameStatus.ACTIVE;
+        }
 
         return this.gameRepo.save(game);
       }
     }
+
     throw new BadRequestException(
       `Uygun atribut kombinasiya tapılmadı (${maxRetries} cəhd edildi).`,
     );
@@ -88,7 +102,7 @@ export class GameService {
     return games;
   }
 
-  async listGames(status?: string): Promise<Game[]> {
+  async listGames(status?: GameStatus): Promise<Game[]> {
     const where = status ? { status } : {};
     return this.gameRepo.find({ where });
   }
@@ -97,7 +111,7 @@ export class GameService {
     const game = await this.getGameById(id);
     if (!game) throw new BadRequestException('Game not found');
 
-    game.status = 'finished';
+    game.status = GameStatus.FINISHED;
     game.endedAt = new Date();
     if (winner) {
       game.winner = winner;

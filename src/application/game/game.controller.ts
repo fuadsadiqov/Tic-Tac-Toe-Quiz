@@ -12,6 +12,7 @@ import { GameService } from './game.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { User } from '../user/entities/user.entity';
 import { LoggedUser } from 'src/infrastructure/user.decorator';
+import { CreateGameDto } from './dto/create-game.dto';
 
 @Controller('games')
 @UseGuards(JwtAuthGuard)
@@ -19,8 +20,14 @@ export class GameController {
   constructor(private readonly gameService: GameService) {}
 
   @Post()
-  async createGame(@Param('categoryId') categoryId: string, @LoggedUser() user) {
-    return this.gameService.createGame(categoryId, user);
+  async createGame(
+    @LoggedUser() user,
+    @Body() body: CreateGameDto,
+  ) {
+    return this.gameService.createGame(
+      user,
+      body
+    );
   }
 
   @Get(':id')
