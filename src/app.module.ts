@@ -10,6 +10,7 @@ import { UserModule } from './application/user/user.module';
 import { AuthModule } from './application/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { GameModule } from './application/game/game.module';
+import { ImportModule } from './import/import.module';
 
 @Module({
   imports: [
@@ -30,7 +31,8 @@ import { GameModule } from './application/game/game.module';
     PersonModule, 
     CategoryModule,
     AuthModule,
-    ConfigModule.forRoot()
+    ConfigModule.forRoot(),
+    ImportModule
   ],
   controllers: [AppController],
   providers: [AppService],
