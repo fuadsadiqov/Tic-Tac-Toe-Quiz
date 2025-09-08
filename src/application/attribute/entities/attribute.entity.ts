@@ -5,6 +5,9 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, ManyToOne } from 't
 
 @Entity()
 export class Attribute extends BaseEntity{
+  @Column({ nullable: true })
+  key: string;
+
   @Column()
   title: string;
 
